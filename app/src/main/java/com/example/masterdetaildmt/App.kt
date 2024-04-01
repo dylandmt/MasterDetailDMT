@@ -1,8 +1,11 @@
 package com.example.masterdetaildmt
 
 import android.app.Application
+import com.example.data.di.injectFeature
+import com.example.data.di.networkModule
 import com.example.masterdetaildmt.di.Module
 import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.GlobalContext.startKoin
 
 class App : Application() {
@@ -11,7 +14,8 @@ class App : Application() {
 
         startKoin {
             androidContext(this@App)
-            modules(Module().appModule)
+            androidLogger()
+            injectFeature()
         }
     }
 }

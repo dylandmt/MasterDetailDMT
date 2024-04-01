@@ -10,11 +10,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.data.viewmodel.MainViewModel
 import com.example.masterdetaildmt.ui.theme.MasterDetailDMTTheme
+import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val vm : MainViewModel by inject()
+        vm.getPokemonList()
         setContent {
             MasterDetailDMTTheme {
                 // A surface container using the 'background' color from the theme
