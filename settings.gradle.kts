@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "MasterDetailDMT"
 include(":app")
+include(":data")
