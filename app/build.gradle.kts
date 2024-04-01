@@ -60,6 +60,13 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
 
+    //DI
+    implementation ("io.insert-koin:koin-androidx-compose:3.2.0")
+    //Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.2")
+    //Navigation
+    implementation ("androidx.navigation:navigation-compose:2.7.7")
+    //Custom
     implementation(project(":data"))
 
     testImplementation("junit:junit:4.13.2")
