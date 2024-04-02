@@ -4,7 +4,7 @@ import com.example.data.implementation.PokemonRepositoryImpl
 import com.example.data.repository.PokemonRepository
 import com.example.data.usecase.GetPokemonListUseCase
 import com.example.data.usecase.GetPokemonSpritesUseCase
-import com.example.data.viewmodel.MainViewModel
+import com.example.data.viewmodel.HomeViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.GlobalContext.loadKoinModules
 import org.koin.dsl.module
@@ -32,5 +32,5 @@ val useCaseModule = module {
 }
 
 val viewModelModule = module {
-    viewModel { MainViewModel(get(), get()) }
+    viewModel { HomeViewModel(get(), get()) }
 }

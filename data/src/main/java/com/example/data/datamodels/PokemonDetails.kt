@@ -2,8 +2,11 @@ package com.example.data.datamodels
 
 import com.google.gson.annotations.SerializedName
 
-data class Sprites(
-    @SerializedName("sprites") val sprites : Sprite
+data class PokemonDetails(
+    @SerializedName("sprites") val sprites : Sprite,
+    @SerializedName("weight") val weight : String,
+    @SerializedName("id") val id : Int,
+    @SerializedName("height") val height : Int,
 )
 
 data class Sprite(

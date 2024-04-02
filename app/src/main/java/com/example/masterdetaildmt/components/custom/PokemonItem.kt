@@ -32,10 +32,13 @@ import com.example.masterdetaildmt.utils.Constants.Companion.DISPLAY_INITIALS_AC
 import com.example.masterdetaildmt.utils.Constants.Companion.DISPLAY_PLACEHOLDER_ACTION
 
 @Composable
-fun PokemonItem(data : PokemonData) {
+fun PokemonItem(data: PokemonData) {
     var action by rememberSaveable { mutableStateOf(DISPLAY_PLACEHOLDER_ACTION) }
-    action = determineAction(data.name,data.urlImage)
-    Column(modifier = Modifier.background(Color.Red)) {
+    action = determineAction(data.name, data.urlImage)
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
         when (action) {
             DISPLAY_INITIALS_ACTION -> {
                 Column(
@@ -65,19 +68,29 @@ fun PokemonItem(data : PokemonData) {
             }
 
             DISPLAY_IMAGE_ACTION -> {
-                Image(
-                    painter = rememberAsyncImagePainter(data.urlImage),
-                    contentDescription = null,
-                    modifier = Modifier.size(128.dp)
-                )
+                Column(
+                    modifier = Modifier
+                        .background(Color.Green, CircleShape)
+                        .size(
+                            dimensionResource(id = R.dimen.master_details_100_dp)
+                        )
+                ) {
+
+                    Image(
+                        painter = rememberAsyncImagePainter(data.urlImage),
+                        contentDescription = null,
+                        modifier = Modifier.size(dimensionResource(id = R.dimen.master_details_100_dp))
+                    )
+                }
             }
+
             else -> {}
         }
     }
 
 }
 
-private fun determineAction(name:String, url: String) : String {
+private fun determineAction(name: String, url: String): String {
     return if (url.isNullOrEmpty()) {
         if (!name.isNullOrEmpty()) {
             DISPLAY_INITIALS_ACTION

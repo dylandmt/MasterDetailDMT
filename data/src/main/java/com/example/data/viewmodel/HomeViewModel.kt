@@ -1,6 +1,5 @@
 package com.example.data.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.datamodels.Pokemon
@@ -13,8 +12,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class MainViewModel (private val getPokemonListUseCase: GetPokemonListUseCase,
-    private val getPokemonSpritesUseCase: GetPokemonSpritesUseCase) : ViewModel() {
+class HomeViewModel (private val getPokemonListUseCase: GetPokemonListUseCase,
+                     private val getPokemonSpritesUseCase: GetPokemonSpritesUseCase) : ViewModel() {
     private val _pokemonListState : MutableStateFlow<ArrayList<Pokemon>> = MutableStateFlow(
         arrayListOf()
     )
@@ -37,24 +36,21 @@ class MainViewModel (private val getPokemonListUseCase: GetPokemonListUseCase,
             val response = getPokemonListUseCase.invoke()
             if(response?.results?.isNotEmpty() == true){
                 setPokemonList(response.results)
-                response.results[0].url.takeLast(2).replace("/","")
             }
         }.invokeOnCompletion {
             getSprites()
         }
     }
 
-    fun getSprites(){
+    private fun getSprites(){
         viewModelScope.launch (Dispatchers.IO){
-            var tempPokemonDisplayList : ArrayList<PokemonData> = arrayListOf()
+            val tempPokemonDisplayList : ArrayList<PokemonData> = arrayListOf()
             pokemonList.value.forEach {
                 val sprites = getPokemonSpritesUseCase.invoke(it.url.takeLast(2).replace("/",""))
                 sprites?.sprites?.let {sprite ->
                     tempPokemonDisplayList.add(PokemonData(name = it.name, urlImage = sprite.frontDefault))
-
                 }
             }
-
             setPokemonDisplayList(tempPokemonDisplayList)
         }
 
