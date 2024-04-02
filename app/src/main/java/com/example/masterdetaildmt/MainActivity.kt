@@ -3,48 +3,29 @@ package com.example.masterdetaildmt
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
 import com.example.data.viewmodel.MainViewModel
-import com.example.masterdetaildmt.ui.theme.MasterDetailDMTTheme
+import com.example.masterdetaildmt.navigation.NavigationHost
 import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val vm : MainViewModel by inject()
+        val vm: MainViewModel by inject()
         vm.getPokemonList()
         setContent {
-            MasterDetailDMTTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting("Android")
-                }
+            val navController = rememberNavController()
+            Scaffold { innerPadding ->
+                NavigationHost(
+                    modifier = Modifier.padding(innerPadding),
+                    navController = navController
+                )
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MasterDetailDMTTheme {
-        Greeting("Android")
     }
 }
