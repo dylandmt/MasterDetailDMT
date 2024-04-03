@@ -16,6 +16,11 @@ class DetailsViewModel : ViewModel() {
         false
     )
     val showSprites: StateFlow<Boolean> = _showSpritesState.asStateFlow()
+
+    private val _showDetailsState: MutableStateFlow<Boolean> = MutableStateFlow(
+        false
+    )
+    val showDetails: StateFlow<Boolean> = _showDetailsState.asStateFlow()
     fun setSpritesList(pokemonSprites: Sprite) {
         val sprites: ArrayList<String> = arrayListOf(
             pokemonSprites.backDefault,
@@ -33,5 +38,8 @@ class DetailsViewModel : ViewModel() {
 
     fun setShowSprites(flag: Boolean) {
         _showSpritesState.value = flag
+    }
+    fun setShowDetails(flag: Boolean) {
+        _showDetailsState.value = flag
     }
 }

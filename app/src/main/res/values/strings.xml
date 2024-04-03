@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">MasterDetailDMT</string>
+    <string name="id"><b>ID: </b>%1$S</string>
+    <string name="name"><b>NAME: </b>%1$S</string>
+    <string name="height"><b>HEIGHT: </b>%1$S</string>
+    <string name="weight"><b>WEIGHT: </b>%1$S</string>
 </resources>

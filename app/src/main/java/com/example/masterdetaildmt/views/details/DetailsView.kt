@@ -15,19 +15,24 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,9 +48,13 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.example.data.datamodels.PokemonData
 import com.example.data.viewmodel.DetailsViewModel
 import com.example.data.viewmodel.HomeViewModel
 import com.example.masterdetaildmt.R
@@ -61,6 +70,7 @@ class DetailsView {
         val pokemonDataSelected = homeViewModel.pokemonDataSelected.collectAsState().value
         val spritesList = detailsViewModel.spritesList.collectAsState().value
         val showSprites = detailsViewModel.showSprites.collectAsState().value
+        val showDetails = detailsViewModel.showDetails.collectAsState().value
         pokemonDataSelected?.details?.sprites?.let {
             detailsViewModel.setSpritesList(pokemonSprites = it)
         }
@@ -75,13 +85,19 @@ class DetailsView {
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxSize()
         ) {
-            PokemonItem(
-                data = pokemonDataSelected!!,
-                size = dimensionResource(id = R.dimen.master_details_300_dp)
-            ) {
-
+            Box {
+                PokemonItem(
+                    data = pokemonDataSelected!!,
+                    size = dimensionResource(id = R.dimen.master_details_300_dp)
+                ) {
+                    detailsViewModel.setShowDetails(true)
+                }
+                if (showDetails) {
+                    PokemonDataContent(pokemonDataSelected) {
+                        detailsViewModel.setShowDetails(false)
+                    }
+                }
             }
-
 
             val infiniteTransition = rememberInfiniteTransition("")
             val animatedBackground by infiniteTransition.animateColor(
@@ -139,7 +155,7 @@ class DetailsView {
     }
 
     @Composable
-    private fun NoDataToShowMessage(){
+    private fun NoDataToShowMessage() {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(text = "No data to show.")
         }
@@ -165,6 +181,51 @@ class DetailsView {
                     }
                 },
                 modifier = Modifier.fillMaxSize()
+            )
+        }
+    }
+
+    @Composable
+    private fun PokemonDataContent(
+        pokemonData: PokemonData,
+        onClick: () -> Unit
+    ) {
+        Column(
+            modifier = Modifier
+                .background(Color.Black.copy(0.5F), CircleShape)
+                .size(dimensionResource(id = R.dimen.master_details_300_dp))
+                .border(BorderStroke(2.dp, Color.White), shape = CircleShape)
+                .clickable { onClick.invoke() },
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = stringResource(id = R.string.id, pokemonData.details.id),
+                style = TextStyle(
+                    color = Color.White,
+                    fontSize = dimensionResource(id = R.dimen.master_details_20_sp).value.sp
+                )
+            )
+            Text(
+                text = stringResource(id = R.string.name, pokemonData.name),
+                style = TextStyle(
+                    color = Color.White,
+                    fontSize = dimensionResource(id = R.dimen.master_details_20_sp).value.sp
+                )
+            )
+            Text(
+                text = stringResource(id = R.string.height, pokemonData.details.height),
+                style = TextStyle(
+                    color = Color.White,
+                    fontSize = dimensionResource(id = R.dimen.master_details_20_sp).value.sp
+                )
+            )
+            Text(
+                text = stringResource(id = R.string.weight, pokemonData.details.weight),
+                style = TextStyle(
+                    color = Color.White,
+                    fontSize = dimensionResource(id = R.dimen.master_details_20_sp).value.sp
+                )
             )
         }
     }
