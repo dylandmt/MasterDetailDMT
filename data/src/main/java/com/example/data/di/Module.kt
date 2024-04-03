@@ -2,8 +2,10 @@ package com.example.data.di
 
 import com.example.data.implementation.PokemonRepositoryImpl
 import com.example.data.repository.PokemonRepository
+import com.example.data.usecase.GetNextPokemonListUseCase
 import com.example.data.usecase.GetPokemonListUseCase
 import com.example.data.usecase.GetPokemonSpritesUseCase
+import com.example.data.viewmodel.DetailsViewModel
 import com.example.data.viewmodel.HomeViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.GlobalContext.loadKoinModules
@@ -29,8 +31,10 @@ val repositoryModule = module {
 val useCaseModule = module {
     factory { GetPokemonListUseCase(get()) }
     factory { GetPokemonSpritesUseCase(get()) }
+    factory { GetNextPokemonListUseCase(get()) }
 }
 
 val viewModelModule = module {
-    viewModel { HomeViewModel(get(), get()) }
+    single { HomeViewModel(get(), get(), get()) }
+    viewModel { DetailsViewModel() }
 }

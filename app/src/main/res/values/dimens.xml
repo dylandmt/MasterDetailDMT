@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="master_details_2_dp">2dp</dimen>
+    <dimen name="master_details_20_dp">20dp</dimen>
+    <dimen name="master_details_10_dp">10dp</dimen>
     <dimen name="master_details_100_dp">100dp</dimen>
+    <dimen name="master_details_200_dp">200dp</dimen>
+    <dimen name="master_details_300_dp">300dp</dimen>
 </resources>

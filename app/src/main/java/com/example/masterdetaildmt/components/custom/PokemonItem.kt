@@ -1,9 +1,10 @@
 package com.example.masterdetaildmt.components.custom
 
-import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
@@ -16,14 +17,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import coil.compose.AsyncImagePainter
+import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.data.datamodels.PokemonData
 import com.example.masterdetaildmt.R
@@ -32,59 +32,59 @@ import com.example.masterdetaildmt.utils.Constants.Companion.DISPLAY_INITIALS_AC
 import com.example.masterdetaildmt.utils.Constants.Companion.DISPLAY_PLACEHOLDER_ACTION
 
 @Composable
-fun PokemonItem(data: PokemonData) {
+fun PokemonItem(
+    data: PokemonData,
+    borderColor: Color = Color.Red,
+    fillColor: Color = Color.Gray,
+    size : Dp = dimensionResource(id = R.dimen.master_details_100_dp),
+    onClick : (PokemonData) -> Unit
+) {
     var action by rememberSaveable { mutableStateOf(DISPLAY_PLACEHOLDER_ACTION) }
-    action = determineAction(data.name, data.urlImage)
+    action = determineAction(name = data.name, url = data.urlImage)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        when (action) {
-            DISPLAY_INITIALS_ACTION -> {
-                Column(
-                    modifier = Modifier
-                        .size(dimensionResource(id = R.dimen.master_details_100_dp))
-                        .background(
-                            Color.Red,
-                            shape = CircleShape
-                        )
-                        .clip(CircleShape)
-                        .border(2.dp, Color.Gray, CircleShape),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(text = data.name.substring(0, 2).uppercase())
+        Column(
+            modifier = Modifier
+                .background(fillColor, CircleShape)
+                .size(size)
+                .border(BorderStroke(2.dp, borderColor), shape = CircleShape)
+                .clickable {
+                    onClick.invoke(data)
+                },
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            when (action) {
+                DISPLAY_INITIALS_ACTION -> {
+                    Text(
+                        text = data.name.substring(0, 2).uppercase(),
+                        fontSize = 40.sp
+                    )
                 }
-            }
 
-            DISPLAY_PLACEHOLDER_ACTION -> {
+                DISPLAY_PLACEHOLDER_ACTION -> {
 
-                Image(
-                    painter = painterResource(id = R.drawable.person_placeholder_icon),
-                    modifier = Modifier.size(dimensionResource(id = R.dimen.master_details_100_dp)),
-                    contentScale = ContentScale.FillBounds,
-                    contentDescription = ""
-                )
-            }
+                    Image(
+                        painter = painterResource(id = R.drawable.person_placeholder_icon),
+                        modifier = Modifier.size(size),
+                        contentScale = ContentScale.FillBounds,
+                        contentDescription = ""
+                    )
+                }
 
-            DISPLAY_IMAGE_ACTION -> {
-                Column(
-                    modifier = Modifier
-                        .background(Color.Green, CircleShape)
-                        .size(
-                            dimensionResource(id = R.dimen.master_details_100_dp)
-                        )
-                ) {
-
+                DISPLAY_IMAGE_ACTION -> {
                     Image(
                         painter = rememberAsyncImagePainter(data.urlImage),
                         contentDescription = null,
-                        modifier = Modifier.size(dimensionResource(id = R.dimen.master_details_100_dp))
+                        modifier = Modifier.size(size)
                     )
+                    Text(text = data.name)
                 }
-            }
 
-            else -> {}
+                else -> {}
+            }
         }
     }
 
