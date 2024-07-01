@@ -6,8 +6,6 @@ import com.example.data.datamodels.PokemonDetails
 
 interface PokemonRepository {
 
-
-
     fun getPokemonDataLoaded() : ArrayList<Pokemon>?
     suspend fun getPokemonList() : PokemonResponse?
     suspend fun getSprites(url:String) : PokemonDetails?

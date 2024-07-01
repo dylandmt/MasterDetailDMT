@@ -2,6 +2,8 @@ package com.example.data.di
 
 import com.example.data.implementation.PokemonRepositoryImpl
 import com.example.data.repository.PokemonRepository
+import com.example.data.usecase.AddNewFavoritePokemonUseCase
+import com.example.data.usecase.GetAllFavoritePokemonListUseCase
 import com.example.data.usecase.GetNextPokemonListUseCase
 import com.example.data.usecase.GetPokemonListUseCase
 import com.example.data.usecase.GetPokemonSpritesUseCase
@@ -19,7 +21,9 @@ private val loadFeature by lazy {
         listOf(
             repositoryModule,
             useCaseModule,
-            viewModelModule, networkModule
+            viewModelModule,
+            networkModule,
+            localStorageModule
         )
     )
 }
@@ -34,9 +38,11 @@ val useCaseModule = module {
     factory { GetPokemonSpritesUseCase(get()) }
     factory { GetNextPokemonListUseCase(get()) }
     factory { GetPreviousPokemonListUseCase(get()) }
+    factory { AddNewFavoritePokemonUseCase(get()) }
+    factory { GetAllFavoritePokemonListUseCase(get()) }
 }
 
 val viewModelModule = module {
-    single { HomeViewModel(get(), get(), get(), get()) }
+    single { HomeViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { DetailsViewModel() }
 }

@@ -21,7 +21,8 @@ class MainActivity : ComponentActivity() {
             Scaffold { innerPadding ->
                 NavigationHost(
                     modifier = Modifier.padding(innerPadding),
-                    navController = navController
+                    navController = navController,
+                    context = applicationContext
                 )
             }
         }

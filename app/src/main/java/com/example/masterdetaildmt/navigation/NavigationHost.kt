@@ -1,5 +1,6 @@
 package com.example.masterdetaildmt.navigation
 
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -13,7 +14,8 @@ import com.example.masterdetaildmt.views.home.HomeView
 fun NavigationHost(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    startDestination: String = NavigationItem.HomeView.route
+    startDestination: String = NavigationItem.HomeView.route,
+    context: Context
 ) {
     NavHost(
         modifier = modifier,
@@ -21,7 +23,7 @@ fun NavigationHost(
         startDestination = startDestination
     ) {
         composable(NavigationItem.HomeView.route){
-            HomeView().getInstance(navController)
+            HomeView().getInstance(navController,context)
         }
         composable(NavigationItem.DetailsView.route){
             DetailsView().getInstance(navController)

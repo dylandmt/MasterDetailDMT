@@ -1,5 +1,6 @@
 package com.example.masterdetaildmt.views.home
 
+import android.content.Context
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -14,6 +15,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
+import com.example.data.di.provideDao
+import com.example.data.localstorage.FavoritePokemonDatabase
+import com.example.data.localstorage.FavoritePokemonEntity
+import com.example.data.localstorage.LocalStorageDAO
 import com.example.data.viewmodel.HomeViewModel
 import com.example.masterdetaildmt.R
 import com.example.masterdetaildmt.components.custom.AnimatedButton
@@ -24,12 +29,10 @@ import org.koin.androidx.compose.inject
 class HomeView {
 
     @Composable
-    fun getInstance(navController: NavHostController) {
+    fun getInstance(navController: NavHostController, context: Context) {
         val homeViewModel: HomeViewModel by inject()
         val pokemonList = homeViewModel.pokemonList.collectAsState().value
         val pokemonListDisplay = homeViewModel.pokemonListDisplay.collectAsState().value
-        val loadNextPokemonList = homeViewModel.loadNextPokemonList.collectAsState().value
-
 
         val scrollState = rememberLazyListState()
         val endOfListReached by remember {
@@ -42,7 +45,6 @@ class HomeView {
                 homeViewModel.getPokemonList()
             }
         }
-
 
         if (pokemonList.isNotEmpty()) {
             LazyColumn(
@@ -66,7 +68,8 @@ class HomeView {
                            navController.navigate(NavigationItem.DetailsView.route)
                        },
                        onSecondaryAction = {
-
+                           homeViewModel.addNewFavoritePokemon(pokemon)
+                           //dao.insert(FavoritePokemonEntity(id = pokemon.details.id, name = pokemon.name))
                        })
                 }
                 item {

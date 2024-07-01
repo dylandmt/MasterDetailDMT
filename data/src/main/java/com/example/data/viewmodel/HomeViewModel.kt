@@ -1,10 +1,13 @@
 package com.example.data.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.datamodels.Pokemon
 import com.example.data.datamodels.PokemonData
 import com.example.data.datamodels.PokemonResponse
+import com.example.data.usecase.AddNewFavoritePokemonUseCase
+import com.example.data.usecase.GetAllFavoritePokemonListUseCase
 import com.example.data.usecase.GetNextPokemonListUseCase
 import com.example.data.usecase.GetPokemonListUseCase
 import com.example.data.usecase.GetPokemonSpritesUseCase
@@ -21,8 +24,12 @@ class HomeViewModel(
     private val getPokemonListUseCase: GetPokemonListUseCase,
     private val getPokemonSpritesUseCase: GetPokemonSpritesUseCase,
     private val getNextPokemonListUseCase: GetNextPokemonListUseCase,
-    private val getPreviousPokemonListUseCase: GetPreviousPokemonListUseCase
+    private val getPreviousPokemonListUseCase: GetPreviousPokemonListUseCase,
+    private val getAllFavoritePokemonListUseCase: GetAllFavoritePokemonListUseCase,
+    private val addNewFavoritePokemonUseCase: AddNewFavoritePokemonUseCase
 ) : ViewModel() {
+
+
     private val _pokemonListState: MutableStateFlow<ArrayList<Pokemon>> = MutableStateFlow(
         arrayListOf()
     )
@@ -49,6 +56,18 @@ class HomeViewModel(
 
     private val _loadNextPokemonListState: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val loadNextPokemonList: StateFlow<Boolean> = _loadNextPokemonListState.asStateFlow()
+
+
+    //private var repository : LocalStorageRepository
+    init {
+        /*val userDao = FavoritePokemonDatabase.getDatabaseInstance(application).localStorageDao()
+        repository = LocalStorageRepository(userDao)*/
+
+        getAllFavoritePokemonList()
+
+    }
+
+
 
     fun setPokemonDataSelected(data: PokemonData) {
         _pokemonDataSelectedState.value = data
@@ -108,6 +127,25 @@ class HomeViewModel(
             }
         }
     }
+
+    fun addNewFavoritePokemon(pokemon: PokemonData) {
+        viewModelScope.launch(Dispatchers.IO) {
+            addNewFavoritePokemonUseCase.invoke(pokemon)
+        }.invokeOnCompletion {
+        }
+    }
+
+
+    private fun getAllFavoritePokemonList() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val allFavoriutes = getAllFavoritePokemonListUseCase.invoke()
+            Log.d("LOCAL",allFavoriutes.toString() )
+        }.invokeOnCompletion {
+            Log.d("THROW:",it?.message.toString())
+        }
+    }
+
+
 
     private fun getSprites() {
         val tempPokemonDisplayList: ArrayList<PokemonData> = arrayListOf()
