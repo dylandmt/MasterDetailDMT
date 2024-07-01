@@ -8,6 +8,7 @@ import com.example.data.usecase.GetNextPokemonListUseCase
 import com.example.data.usecase.GetPokemonListUseCase
 import com.example.data.usecase.GetPokemonSpritesUseCase
 import com.example.data.usecase.GetPreviousPokemonListUseCase
+import com.example.data.usecase.RemoveFavoritePokemonUseCase
 import com.example.data.viewmodel.DetailsViewModel
 import com.example.data.viewmodel.HomeViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -40,9 +41,10 @@ val useCaseModule = module {
     factory { GetPreviousPokemonListUseCase(get()) }
     factory { AddNewFavoritePokemonUseCase(get()) }
     factory { GetAllFavoritePokemonListUseCase(get()) }
+    factory { RemoveFavoritePokemonUseCase(get()) }
 }
 
 val viewModelModule = module {
-    single { HomeViewModel(get(), get(), get(), get(), get(), get()) }
+    single { HomeViewModel(get(), get(), get(), get(), get(), get(),get()) }
     viewModel { DetailsViewModel() }
 }

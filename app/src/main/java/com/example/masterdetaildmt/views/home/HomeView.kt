@@ -24,6 +24,8 @@ import com.example.masterdetaildmt.R
 import com.example.masterdetaildmt.components.custom.AnimatedButton
 import com.example.masterdetaildmt.components.custom.PokemonItemListTemplate
 import com.example.masterdetaildmt.navigation.NavigationItem
+import com.example.masterdetaildmt.utils.Constants.Companion.ADD_NEW_FAVORITE_POKEMON_ACTION
+import com.example.masterdetaildmt.utils.Constants.Companion.REMOVE_FAVORITE_POKEMON_ACTION
 import org.koin.androidx.compose.inject
 
 class HomeView {
@@ -67,8 +69,16 @@ class HomeView {
                            homeViewModel.setPokemonDataSelected(pokemon)
                            navController.navigate(NavigationItem.DetailsView.route)
                        },
-                       onSecondaryAction = {
-                           homeViewModel.addNewFavoritePokemon(pokemon)
+                       onSecondaryAction = {customAction ->
+                           when(customAction){
+                               ADD_NEW_FAVORITE_POKEMON_ACTION -> {
+                                   homeViewModel.addNewFavoritePokemon(pokemon)
+                               }
+                               REMOVE_FAVORITE_POKEMON_ACTION ->{
+                                   homeViewModel.removeFavoritePokemon(pokemon)
+                               }
+                               else -> {}
+                           }
                        })
                 }
                 item {

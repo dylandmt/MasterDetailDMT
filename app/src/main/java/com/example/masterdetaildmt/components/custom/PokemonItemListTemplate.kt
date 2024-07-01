@@ -22,17 +22,16 @@ import androidx.compose.ui.res.painterResource
 import com.example.data.datamodels.PokemonData
 import com.example.masterdetaildmt.R
 import com.example.masterdetaildmt.navigation.NavigationItem
+import com.example.masterdetaildmt.utils.Constants.Companion.ADD_NEW_FAVORITE_POKEMON_ACTION
+import com.example.masterdetaildmt.utils.Constants.Companion.REMOVE_FAVORITE_POKEMON_ACTION
 
 @Composable
 fun PokemonItemListTemplate(
     pokemon: PokemonData,
     onPrimaryAction: () -> Unit,
-    onSecondaryAction: () -> Unit
+    onSecondaryAction: (String) -> Unit
 ) {
-
-    val isFavorite = remember {
-        mutableStateOf(pokemon.isFavorite)
-    }
+    val isFavorite = remember { mutableStateOf(pokemon.isFavorite) }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -72,7 +71,14 @@ fun PokemonItemListTemplate(
             modifier = Modifier
                 .size(dimensionResource(id = R.dimen.master_details_30_dp))
                 .clickable {
-                    onSecondaryAction.invoke()
+                    onSecondaryAction.invoke(
+                        if (isFavorite.value) {
+                            REMOVE_FAVORITE_POKEMON_ACTION
+                        } else {
+                            ADD_NEW_FAVORITE_POKEMON_ACTION
+                        }
+                    )
+                    isFavorite.value = !isFavorite.value
                 }
         )
     }

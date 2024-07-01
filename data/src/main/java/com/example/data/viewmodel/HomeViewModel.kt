@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.datamodels.Pokemon
 import com.example.data.datamodels.PokemonData
+import com.example.data.datamodels.PokemonDetails
 import com.example.data.datamodels.PokemonResponse
 import com.example.data.localstorage.FavoritePokemonEntity
 import com.example.data.usecase.AddNewFavoritePokemonUseCase
@@ -13,6 +14,7 @@ import com.example.data.usecase.GetNextPokemonListUseCase
 import com.example.data.usecase.GetPokemonListUseCase
 import com.example.data.usecase.GetPokemonSpritesUseCase
 import com.example.data.usecase.GetPreviousPokemonListUseCase
+import com.example.data.usecase.RemoveFavoritePokemonUseCase
 import com.example.data.utils.Constants.Companion.BASE_MAIN_URL
 import com.example.data.utils.Constants.Companion.EMPTY_STRING
 import kotlinx.coroutines.Dispatchers
@@ -27,7 +29,8 @@ class HomeViewModel(
     private val getNextPokemonListUseCase: GetNextPokemonListUseCase,
     private val getPreviousPokemonListUseCase: GetPreviousPokemonListUseCase,
     private val getAllFavoritePokemonListUseCase: GetAllFavoritePokemonListUseCase,
-    private val addNewFavoritePokemonUseCase: AddNewFavoritePokemonUseCase
+    private val addNewFavoritePokemonUseCase: AddNewFavoritePokemonUseCase,
+    private val removeFavoritePokemonUseCase: RemoveFavoritePokemonUseCase
 ) : ViewModel() {
 
 
@@ -90,7 +93,7 @@ class HomeViewModel(
         _previousPokemonListUrlState.value = url
     }
 
-    private fun setFavoritePokemonList(favoritePokemonList: List<FavoritePokemonEntity>){
+    private fun setFavoritePokemonList(favoritePokemonList: List<FavoritePokemonEntity>) {
         _favoritePokemonListState.value = favoritePokemonList
     }
 
@@ -143,13 +146,19 @@ class HomeViewModel(
                     isFavorite = true
                 }
         }
-        var pokemonListToDisplay:ArrayList<PokemonData> = arrayListOf()
-
-        setPokemonDisplayList(pokemonListToDisplay)
-        pokemonListToDisplay = pokemonListDisplay.value
-        setPokemonDisplayList(pokemonListToDisplay)
     }
 
+    fun removeFavoritePokemon(pokemon: PokemonData) {
+        viewModelScope.launch(Dispatchers.IO) {
+            removeFavoritePokemonUseCase.invoke(pokemon)
+        }.invokeOnCompletion {
+            getAllFavoritePokemonList()
+            _pokemonListDisplayState.value.find { pokemonDisplayed -> pokemonDisplayed.details.id == pokemon.details.id }
+                ?.apply {
+                    isFavorite = false
+                }
+        }
+    }
 
     private fun getAllFavoritePokemonList() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -172,21 +181,17 @@ class HomeViewModel(
                     )
                 )
 
-                var isFavorite: Boolean = false
-                if (favoritePokemonList.value.isNotEmpty()){
-                    isFavorite = favoritePokemonList.value.find { favoritePokemon -> favoritePokemon.id == pokemonDetails?.id } != null
-                }
-                    pokemonDetails?.sprites?.let { sprite ->
-
-                        tempPokemonDisplayList.add(
-                            PokemonData(
-                                name = it.name,
-                                urlImage = sprite.frontDefault,
-                                details = pokemonDetails,
-                                isFavorite = isFavorite
-                            )
+                val isFavorite = isFavoritePokemon(pokemonDetails)
+                pokemonDetails?.sprites?.let { sprite ->
+                    tempPokemonDisplayList.add(
+                        PokemonData(
+                            name = it.name,
+                            urlImage = sprite.frontDefault,
+                            details = pokemonDetails,
+                            isFavorite = isFavorite
                         )
-                    }
+                    )
+                }
             }
         }.invokeOnCompletion {
             setPokemonDisplayList(tempPokemonDisplayList)
@@ -223,5 +228,14 @@ class HomeViewModel(
             }
             setPokemonList(response.results)
         }
+    }
+
+    private fun isFavoritePokemon(pokemonDetails: PokemonDetails?): Boolean {
+        var isFavorite: Boolean = false
+        if (favoritePokemonList.value.isNotEmpty()) {
+            isFavorite =
+                favoritePokemonList.value.find { favoritePokemon -> favoritePokemon.id == pokemonDetails?.id } != null
+        }
+        return isFavorite
     }
 }
