@@ -7,6 +7,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
@@ -37,13 +38,16 @@ fun PokemonItem(
     borderColor: Color = Color.Red,
     fillColor: Color = Color.Gray,
     size : Dp = dimensionResource(id = R.dimen.master_details_100_dp),
+    horizontalMargin : Dp = dimensionResource(id = R.dimen.master_details_0_dp),
+    verticalMargin : Dp = dimensionResource(id = R.dimen.master_details_0_dp),
     onClick : (PokemonData) -> Unit
 ) {
     var action by rememberSaveable { mutableStateOf(DISPLAY_PLACEHOLDER_ACTION) }
     action = determineAction(name = data.name, url = data.urlImage)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.padding(vertical = verticalMargin, horizontal = horizontalMargin)
     ) {
         Column(
             modifier = Modifier

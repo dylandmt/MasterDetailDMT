@@ -28,12 +28,14 @@ import com.example.masterdetaildmt.utils.Constants
 @Composable
 fun AnimatedButton(
     iconPainter: Painter = painterResource(R.drawable.arrow_down),
+    initialColor : Color = Color.Red,
+    targetColor: Color = Color.Red,
     onClick : () -> Unit
 ) {
     val infiniteTransition = rememberInfiniteTransition("")
     val animatedBackground by infiniteTransition.animateColor(
-        initialValue = Color.Red,
-        targetValue = Color.Red.copy(0.2F),
+        initialValue = initialColor,
+        targetValue = targetColor.copy(0.2F),
         animationSpec = infiniteRepeatable(
             animation = tween(Constants.DEFAULT_ANIMATION_TIME, easing = LinearEasing),
             repeatMode = RepeatMode.Reverse

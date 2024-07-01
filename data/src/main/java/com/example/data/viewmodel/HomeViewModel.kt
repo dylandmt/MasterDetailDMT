@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.datamodels.Pokemon
 import com.example.data.datamodels.PokemonData
+import com.example.data.datamodels.PokemonResponse
 import com.example.data.usecase.GetNextPokemonListUseCase
 import com.example.data.usecase.GetPokemonListUseCase
 import com.example.data.usecase.GetPokemonSpritesUseCase
@@ -20,7 +21,7 @@ class HomeViewModel(
     private val getPokemonListUseCase: GetPokemonListUseCase,
     private val getPokemonSpritesUseCase: GetPokemonSpritesUseCase,
     private val getNextPokemonListUseCase: GetNextPokemonListUseCase,
-    private val getPreviousPokemonListUseCase : GetPreviousPokemonListUseCase
+    private val getPreviousPokemonListUseCase: GetPreviousPokemonListUseCase
 ) : ViewModel() {
     private val _pokemonListState: MutableStateFlow<ArrayList<Pokemon>> = MutableStateFlow(
         arrayListOf()
@@ -37,19 +38,22 @@ class HomeViewModel(
     private val _nextPokemonListUrlState: MutableStateFlow<String> = MutableStateFlow(EMPTY_STRING)
     private val nextPokemonListUrl: StateFlow<String> = _nextPokemonListUrlState.asStateFlow()
 
-    private val _previousPokemonListUrlState: MutableStateFlow<String> = MutableStateFlow(EMPTY_STRING)
-    private val previousPokemonListUrl: StateFlow<String> = _previousPokemonListUrlState.asStateFlow()
+    private val _previousPokemonListUrlState: MutableStateFlow<String> =
+        MutableStateFlow(EMPTY_STRING)
+    private val previousPokemonListUrl: StateFlow<String> =
+        _previousPokemonListUrlState.asStateFlow()
 
     private val _pokemonDataSelectedState: MutableStateFlow<PokemonData?> = MutableStateFlow(null)
     val pokemonDataSelected: StateFlow<PokemonData?> = _pokemonDataSelectedState.asStateFlow()
 
 
-    private val _loadNextPokemonListState : MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val loadNextPokemonList : StateFlow<Boolean> =  _loadNextPokemonListState.asStateFlow()
+    private val _loadNextPokemonListState: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val loadNextPokemonList: StateFlow<Boolean> = _loadNextPokemonListState.asStateFlow()
 
-    fun setPokemonDataSelected(data : PokemonData){
+    fun setPokemonDataSelected(data: PokemonData) {
         _pokemonDataSelectedState.value = data
     }
+
     private fun setPokemonList(pokemonList: ArrayList<Pokemon>) {
         _pokemonListState.value = pokemonList
     }
@@ -69,22 +73,7 @@ class HomeViewModel(
     fun getPokemonList() {
         viewModelScope.launch(Dispatchers.IO) {
             val response = getPokemonListUseCase.invoke()
-            if (response?.results?.isNotEmpty() == true) {
-                if (response.next.isNullOrEmpty() || response.next == "null"){
-                    setNextPokemonListUrl(EMPTY_STRING)
-                }
-                else{
-                    setNextPokemonListUrl(response.next)
-                }
-
-                if (response.previous.isNullOrEmpty() || response.previous == "null"){
-                    setPreviousPokemonListUrl(EMPTY_STRING)
-                }
-                else{
-                    setPreviousPokemonListUrl(response.previous)
-                }
-                setPokemonList(response.results)
-            }
+            processResponse(response = response)
         }.invokeOnCompletion {
             if (pokemonList.value.isNotEmpty()) {
                 getSprites()
@@ -93,26 +82,11 @@ class HomeViewModel(
     }
 
     fun getNextPokemonItems() {
-        if (nextPokemonListUrl.value != EMPTY_STRING) {
+        if (hasValidValue(nextPokemonListUrl.value)) {
             val offset = getOffset(nextPokemonListUrl.value)
             viewModelScope.launch(Dispatchers.IO) {
-                val response = getNextPokemonListUseCase.invoke(offset,20)
-                if (response?.results?.isNotEmpty() == true) {
-                    if (response.next.isEmpty() || response.next == "null"){
-                        setNextPokemonListUrl(EMPTY_STRING)
-                    }
-                    else{
-                        setNextPokemonListUrl(response.next)
-                    }
-
-                    if (response.previous.isEmpty() || response.previous == "null"){
-                        setPreviousPokemonListUrl(EMPTY_STRING)
-                    }
-                    else{
-                        setPreviousPokemonListUrl(response.previous)
-                    }
-                    setPokemonList(response.results)
-                }
+                val response = getNextPokemonListUseCase.invoke(offset, 20)
+                processResponse(response = response)
             }.invokeOnCompletion {
                 if (pokemonList.value.isNotEmpty()) {
                     getSprites()
@@ -122,26 +96,11 @@ class HomeViewModel(
     }
 
     fun getPreviousPokemonItems() {
-        if (previousPokemonListUrl.value != EMPTY_STRING) {
+        if (hasValidValue(previousPokemonListUrl.value)) {
             val offset = getOffset(previousPokemonListUrl.value)
             viewModelScope.launch(Dispatchers.IO) {
-                val response = getNextPokemonListUseCase.invoke(offset,20)
-                if (response?.results?.isNotEmpty() == true) {
-                    if (response.next.isEmpty() || response.next == "null"){
-                        setNextPokemonListUrl(EMPTY_STRING)
-                    }
-                    else{
-                        setNextPokemonListUrl(response.next)
-                    }
-
-                    if (response.previous.isEmpty() || response.previous == "null"){
-                        setPreviousPokemonListUrl(EMPTY_STRING)
-                    }
-                    else{
-                        setPreviousPokemonListUrl(response.previous)
-                    }
-                    setPokemonList(response.results)
-                }
+                val response = getPreviousPokemonListUseCase.invoke(offset, 20)
+                processResponse(response = response)
             }.invokeOnCompletion {
                 if (pokemonList.value.isNotEmpty()) {
                     getSprites()
@@ -176,9 +135,34 @@ class HomeViewModel(
 
     }
 
-    private fun getOffset(url:String): Int {
-        val parameters: String = url.split("?")[1]
-        val numbers = parameters.split("&")
-        return numbers[0].replace("offset=", EMPTY_STRING).toInt()
+    private fun getOffset(url: String): Int {
+        var offset: Int = 20
+        if (hasValidValue(url)){
+            val parameters: String = url.split("?")[1]
+            val numbers = parameters.split("&")
+            offset = numbers[0].replace("offset=", EMPTY_STRING).toInt()
+        }
+        return offset
+    }
+
+    private fun hasValidValue(data: String?): Boolean {
+        return data != EMPTY_STRING && data != "null" && data!=null
+    }
+
+    private fun processResponse(response: PokemonResponse?) {
+        if (response?.results?.isNotEmpty() == true) {
+            if (hasValidValue(response.next)) {
+                setNextPokemonListUrl(response.next)
+            } else {
+                setNextPokemonListUrl(EMPTY_STRING)
+            }
+
+            if (hasValidValue(response.previous)) {
+                setPreviousPokemonListUrl(response.previous)
+            } else {
+                setPreviousPokemonListUrl(EMPTY_STRING)
+            }
+            setPokemonList(response.results)
+        }
     }
 }
