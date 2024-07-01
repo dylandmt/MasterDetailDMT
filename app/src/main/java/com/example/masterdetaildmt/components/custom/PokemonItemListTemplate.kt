@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,6 +29,10 @@ fun PokemonItemListTemplate(
     onPrimaryAction: () -> Unit,
     onSecondaryAction: () -> Unit
 ) {
+
+    val isFavorite = remember {
+        mutableStateOf(pokemon.isFavorite)
+    }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -55,11 +61,19 @@ fun PokemonItemListTemplate(
             }
         }
         Icon(
-            painter = painterResource(id = R.drawable.star_outline),
+            painter = painterResource(
+                id = if (isFavorite.value) {
+                    R.drawable.star_filled
+                } else {
+                    R.drawable.star_outline
+                }
+            ),
             contentDescription = "Favorite",
-            modifier = Modifier.size(dimensionResource(id = R.dimen.master_details_30_dp)).clickable {
-                onSecondaryAction.invoke()
-            }
+            modifier = Modifier
+                .size(dimensionResource(id = R.dimen.master_details_30_dp))
+                .clickable {
+                    onSecondaryAction.invoke()
+                }
         )
     }
 }

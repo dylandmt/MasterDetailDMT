@@ -40,11 +40,11 @@ class HomeView {
                 scrollState.isScrolledToEnd()
             }
         }
-        LaunchedEffect(Unit) {
+        /*LaunchedEffect(Unit) {
             if (pokemonList.isEmpty()) {
                 homeViewModel.getPokemonList()
             }
-        }
+        }*/
 
         if (pokemonList.isNotEmpty()) {
             LazyColumn(
@@ -69,7 +69,6 @@ class HomeView {
                        },
                        onSecondaryAction = {
                            homeViewModel.addNewFavoritePokemon(pokemon)
-                           //dao.insert(FavoritePokemonEntity(id = pokemon.details.id, name = pokemon.name))
                        })
                 }
                 item {

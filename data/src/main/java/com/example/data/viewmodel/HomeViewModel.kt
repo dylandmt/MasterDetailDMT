@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.data.datamodels.Pokemon
 import com.example.data.datamodels.PokemonData
 import com.example.data.datamodels.PokemonResponse
+import com.example.data.localstorage.FavoritePokemonEntity
 import com.example.data.usecase.AddNewFavoritePokemonUseCase
 import com.example.data.usecase.GetAllFavoritePokemonListUseCase
 import com.example.data.usecase.GetNextPokemonListUseCase
@@ -54,19 +55,19 @@ class HomeViewModel(
     val pokemonDataSelected: StateFlow<PokemonData?> = _pokemonDataSelectedState.asStateFlow()
 
 
-    private val _loadNextPokemonListState: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val loadNextPokemonList: StateFlow<Boolean> = _loadNextPokemonListState.asStateFlow()
+    private val _favoritePokemonListState: MutableStateFlow<List<FavoritePokemonEntity>> =
+        MutableStateFlow(
+            listOf()
+        )
+    val favoritePokemonList: StateFlow<List<FavoritePokemonEntity>> =
+        _favoritePokemonListState.asStateFlow()
 
 
     //private var repository : LocalStorageRepository
     init {
-        /*val userDao = FavoritePokemonDatabase.getDatabaseInstance(application).localStorageDao()
-        repository = LocalStorageRepository(userDao)*/
-
+        getPokemonList()
         getAllFavoritePokemonList()
-
     }
-
 
 
     fun setPokemonDataSelected(data: PokemonData) {
@@ -89,7 +90,11 @@ class HomeViewModel(
         _previousPokemonListUrlState.value = url
     }
 
-    fun getPokemonList() {
+    private fun setFavoritePokemonList(favoritePokemonList: List<FavoritePokemonEntity>){
+        _favoritePokemonListState.value = favoritePokemonList
+    }
+
+    private fun getPokemonList() {
         viewModelScope.launch(Dispatchers.IO) {
             val response = getPokemonListUseCase.invoke()
             processResponse(response = response)
@@ -132,19 +137,28 @@ class HomeViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             addNewFavoritePokemonUseCase.invoke(pokemon)
         }.invokeOnCompletion {
+            getAllFavoritePokemonList()
+            _pokemonListDisplayState.value.find { pokemonDisplayed -> pokemonDisplayed.details.id == pokemon.details.id }
+                ?.apply {
+                    isFavorite = true
+                }
         }
+        var pokemonListToDisplay:ArrayList<PokemonData> = arrayListOf()
+
+        setPokemonDisplayList(pokemonListToDisplay)
+        pokemonListToDisplay = pokemonListDisplay.value
+        setPokemonDisplayList(pokemonListToDisplay)
     }
 
 
     private fun getAllFavoritePokemonList() {
         viewModelScope.launch(Dispatchers.IO) {
-            val allFavoriutes = getAllFavoritePokemonListUseCase.invoke()
-            Log.d("LOCAL",allFavoriutes.toString() )
-        }.invokeOnCompletion {
-            Log.d("THROW:",it?.message.toString())
-        }
+            val favoritePokemonList = getAllFavoritePokemonListUseCase.invoke()
+            favoritePokemonList?.let {
+                setFavoritePokemonList(favoritePokemonList)
+            }
+        }.invokeOnCompletion { }
     }
-
 
 
     private fun getSprites() {
@@ -157,15 +171,22 @@ class HomeViewModel(
                         EMPTY_STRING
                     )
                 )
-                pokemonDetails?.sprites?.let { sprite ->
-                    tempPokemonDisplayList.add(
-                        PokemonData(
-                            name = it.name,
-                            urlImage = sprite.frontDefault,
-                            details = pokemonDetails
-                        )
-                    )
+
+                var isFavorite: Boolean = false
+                if (favoritePokemonList.value.isNotEmpty()){
+                    isFavorite = favoritePokemonList.value.find { favoritePokemon -> favoritePokemon.id == pokemonDetails?.id } != null
                 }
+                    pokemonDetails?.sprites?.let { sprite ->
+
+                        tempPokemonDisplayList.add(
+                            PokemonData(
+                                name = it.name,
+                                urlImage = sprite.frontDefault,
+                                details = pokemonDetails,
+                                isFavorite = isFavorite
+                            )
+                        )
+                    }
             }
         }.invokeOnCompletion {
             setPokemonDisplayList(tempPokemonDisplayList)
@@ -175,7 +196,7 @@ class HomeViewModel(
 
     private fun getOffset(url: String): Int {
         var offset: Int = 20
-        if (hasValidValue(url)){
+        if (hasValidValue(url)) {
             val parameters: String = url.split("?")[1]
             val numbers = parameters.split("&")
             offset = numbers[0].replace("offset=", EMPTY_STRING).toInt()
@@ -184,7 +205,7 @@ class HomeViewModel(
     }
 
     private fun hasValidValue(data: String?): Boolean {
-        return data != EMPTY_STRING && data != "null" && data!=null
+        return data != EMPTY_STRING && data != "null" && data != null
     }
 
     private fun processResponse(response: PokemonResponse?) {
