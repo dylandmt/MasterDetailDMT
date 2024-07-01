@@ -12,4 +12,5 @@ interface PokemonRepository {
     suspend fun getPokemonList() : PokemonResponse?
     suspend fun getSprites(url:String) : PokemonDetails?
     suspend fun getNextPokemonList(offset:Int,limit:Int) : PokemonResponse?
+    suspend fun getPreviousPokemonList(offset:Int,limit:Int) : PokemonResponse?
 }

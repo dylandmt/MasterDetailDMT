@@ -4,10 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.datamodels.Pokemon
 import com.example.data.datamodels.PokemonData
-import com.example.data.repository.PokemonRepository
 import com.example.data.usecase.GetNextPokemonListUseCase
 import com.example.data.usecase.GetPokemonListUseCase
 import com.example.data.usecase.GetPokemonSpritesUseCase
+import com.example.data.usecase.GetPreviousPokemonListUseCase
 import com.example.data.utils.Constants.Companion.BASE_MAIN_URL
 import com.example.data.utils.Constants.Companion.EMPTY_STRING
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +19,8 @@ import kotlinx.coroutines.launch
 class HomeViewModel(
     private val getPokemonListUseCase: GetPokemonListUseCase,
     private val getPokemonSpritesUseCase: GetPokemonSpritesUseCase,
-    private val getNextPokemonListUseCase: GetNextPokemonListUseCase
+    private val getNextPokemonListUseCase: GetNextPokemonListUseCase,
+    private val getPreviousPokemonListUseCase : GetPreviousPokemonListUseCase
 ) : ViewModel() {
     private val _pokemonListState: MutableStateFlow<ArrayList<Pokemon>> = MutableStateFlow(
         arrayListOf()
@@ -36,8 +37,15 @@ class HomeViewModel(
     private val _nextPokemonListUrlState: MutableStateFlow<String> = MutableStateFlow(EMPTY_STRING)
     private val nextPokemonListUrl: StateFlow<String> = _nextPokemonListUrlState.asStateFlow()
 
+    private val _previousPokemonListUrlState: MutableStateFlow<String> = MutableStateFlow(EMPTY_STRING)
+    private val previousPokemonListUrl: StateFlow<String> = _previousPokemonListUrlState.asStateFlow()
+
     private val _pokemonDataSelectedState: MutableStateFlow<PokemonData?> = MutableStateFlow(null)
     val pokemonDataSelected: StateFlow<PokemonData?> = _pokemonDataSelectedState.asStateFlow()
+
+
+    private val _loadNextPokemonListState : MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val loadNextPokemonList : StateFlow<Boolean> =  _loadNextPokemonListState.asStateFlow()
 
     fun setPokemonDataSelected(data : PokemonData){
         _pokemonDataSelectedState.value = data
@@ -54,11 +62,27 @@ class HomeViewModel(
         _nextPokemonListUrlState.value = url
     }
 
+    private fun setPreviousPokemonListUrl(url: String) {
+        _previousPokemonListUrlState.value = url
+    }
+
     fun getPokemonList() {
         viewModelScope.launch(Dispatchers.IO) {
             val response = getPokemonListUseCase.invoke()
             if (response?.results?.isNotEmpty() == true) {
-                setNextPokemonListUrl(response.next)
+                if (response.next.isNullOrEmpty() || response.next == "null"){
+                    setNextPokemonListUrl(EMPTY_STRING)
+                }
+                else{
+                    setNextPokemonListUrl(response.next)
+                }
+
+                if (response.previous.isNullOrEmpty() || response.previous == "null"){
+                    setPreviousPokemonListUrl(EMPTY_STRING)
+                }
+                else{
+                    setPreviousPokemonListUrl(response.previous)
+                }
                 setPokemonList(response.results)
             }
         }.invokeOnCompletion {
@@ -70,25 +94,57 @@ class HomeViewModel(
 
     fun getNextPokemonItems() {
         if (nextPokemonListUrl.value != EMPTY_STRING) {
-            val url = nextPokemonListUrl.value.replace(BASE_MAIN_URL + "pokemon", EMPTY_STRING)
-            val limit = url.substringAfter("limit=").filter { it.isDigit() }.toInt()
-            val offset =
-                url.substringAfter("offset=").replace("&limit=$limit", "").filter { it.isDigit() }
-                    .toInt()
-
+            val offset = getOffset(nextPokemonListUrl.value)
             viewModelScope.launch(Dispatchers.IO) {
-                val response = getNextPokemonListUseCase.invoke(offset, limit)
+                val response = getNextPokemonListUseCase.invoke(offset,20)
                 if (response?.results?.isNotEmpty() == true) {
-                    setNextPokemonListUrl(response.next)
-                    val currentPokemonList = pokemonList.value
-                    response.results.forEach {
-                        currentPokemonList.add(it)
+                    if (response.next.isEmpty() || response.next == "null"){
+                        setNextPokemonListUrl(EMPTY_STRING)
                     }
-                    setPokemonList(currentPokemonList)
+                    else{
+                        setNextPokemonListUrl(response.next)
+                    }
+
+                    if (response.previous.isEmpty() || response.previous == "null"){
+                        setPreviousPokemonListUrl(EMPTY_STRING)
+                    }
+                    else{
+                        setPreviousPokemonListUrl(response.previous)
+                    }
+                    setPokemonList(response.results)
                 }
             }.invokeOnCompletion {
                 if (pokemonList.value.isNotEmpty()) {
-                    //
+                    getSprites()
+                }
+            }
+        }
+    }
+
+    fun getPreviousPokemonItems() {
+        if (previousPokemonListUrl.value != EMPTY_STRING) {
+            val offset = getOffset(previousPokemonListUrl.value)
+            viewModelScope.launch(Dispatchers.IO) {
+                val response = getNextPokemonListUseCase.invoke(offset,20)
+                if (response?.results?.isNotEmpty() == true) {
+                    if (response.next.isEmpty() || response.next == "null"){
+                        setNextPokemonListUrl(EMPTY_STRING)
+                    }
+                    else{
+                        setNextPokemonListUrl(response.next)
+                    }
+
+                    if (response.previous.isEmpty() || response.previous == "null"){
+                        setPreviousPokemonListUrl(EMPTY_STRING)
+                    }
+                    else{
+                        setPreviousPokemonListUrl(response.previous)
+                    }
+                    setPokemonList(response.results)
+                }
+            }.invokeOnCompletion {
+                if (pokemonList.value.isNotEmpty()) {
+                    getSprites()
                 }
             }
         }
@@ -118,5 +174,11 @@ class HomeViewModel(
             setPokemonDisplayList(tempPokemonDisplayList)
         }
 
+    }
+
+    private fun getOffset(url:String): Int {
+        val parameters: String = url.split("?")[1]
+        val numbers = parameters.split("&")
+        return numbers[0].replace("offset=", EMPTY_STRING).toInt()
     }
 }

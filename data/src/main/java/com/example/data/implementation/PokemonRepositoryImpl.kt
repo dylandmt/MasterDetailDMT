@@ -57,4 +57,17 @@ class PokemonRepositoryImpl(private val service: ApiService) : PokemonRepository
             null
         }
     }
+
+    override suspend fun getPreviousPokemonList(offset: Int, limit: Int): PokemonResponse? {
+        return try {
+            val response = service.getPreviousPokemonList(offset, limit)
+            if (response.isSuccessful){
+                response.body()
+            } else{
+                null
+            }
+        } catch (e:Exception){
+            null
+        }
+    }
 }

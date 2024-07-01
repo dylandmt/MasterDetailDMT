@@ -58,6 +58,7 @@ import com.example.data.datamodels.PokemonData
 import com.example.data.viewmodel.DetailsViewModel
 import com.example.data.viewmodel.HomeViewModel
 import com.example.masterdetaildmt.R
+import com.example.masterdetaildmt.components.custom.AnimatedButton
 import com.example.masterdetaildmt.components.custom.PokemonItem
 import com.example.masterdetaildmt.utils.Constants.Companion.DEFAULT_ANIMATION_TIME
 import org.koin.androidx.compose.inject
@@ -99,36 +100,16 @@ class DetailsView {
                 }
             }
 
-            val infiniteTransition = rememberInfiniteTransition("")
-            val animatedBackground by infiniteTransition.animateColor(
-                initialValue = Color.Red,
-                targetValue = Color.Red.copy(0.2F),
-                animationSpec = infiniteRepeatable(
-                    animation = tween(DEFAULT_ANIMATION_TIME, easing = LinearEasing),
-                    repeatMode = RepeatMode.Reverse
-                ), label = ""
-            )
-
-            Column(
-                modifier = Modifier
-                    .background(color = animatedBackground)
-                    .border(width = dimensionResource(R.dimen.master_details_2_dp), Color.Black)
-                    .height(dimensionResource(R.dimen.master_details_20_dp))
-                    .fillMaxWidth()
-                    .clickable {
-                        detailsViewModel.setShowSprites(!showSprites)
-                    },
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Image(
-                    painter = painterResource(
-                        id = if (showSprites) {
-                            R.drawable.arrow_up
-                        } else {
-                            R.drawable.arrow_down
-                        }
-                    ), contentDescription = ""
+            AnimatedButton(
+                iconPainter = painterResource(
+                    id = if (showSprites) {
+                        R.drawable.arrow_up
+                    } else {
+                        R.drawable.arrow_down
+                    }
                 )
+            ) {
+                detailsViewModel.setShowSprites(!showSprites)
             }
 
             AnimatedVisibility(

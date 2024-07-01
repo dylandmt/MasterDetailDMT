@@ -16,4 +16,6 @@ interface ApiService {
 
     @GET("pokemon")
     suspend fun getNextPokemonList(@Query("offset") offset:Int, @Query("limit") limit:Int): Response<PokemonResponse>
+    @GET("pokemon")
+    suspend fun getPreviousPokemonList(@Query("offset") offset:Int, @Query("limit") limit:Int): Response<PokemonResponse>
 }
