@@ -18,7 +18,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.data.datamodels.PokemonData
 import com.example.data.viewmodel.HomeViewModel
+import com.example.data.viewmodel.LoadingComponentViewModel
 import com.example.masterdetaildmt.components.custom.CustomTopBar
+import com.example.masterdetaildmt.components.custom.LoadingComponent
 import com.example.masterdetaildmt.navigation.NavigationHost
 import com.example.masterdetaildmt.navigation.NavigationItem
 import com.example.masterdetaildmt.utils.Constants
@@ -34,34 +36,43 @@ class MainActivity : ComponentActivity() {
 
             val currentView = remember { mutableStateOf("") }
             val homeViewModel: HomeViewModel by inject()
-            val pokemonSelected: PokemonData? = homeViewModel.pokemonDataSelected.collectAsState().value
+
+            val pokemonSelected: PokemonData? =
+                homeViewModel.pokemonDataSelected.collectAsState().value
             val toggleCurrentValue = remember { mutableStateOf(false) }
 
+            val loadingComponentViewModel: LoadingComponentViewModel by inject()
+            val showLoading = loadingComponentViewModel.showLoading.collectAsState().value
 
             LaunchedEffect(navBackStackEntry) {
                 currentView.value = navBackStackEntry?.destination?.route.toString()
-                when(navBackStackEntry?.destination?.route){
-                   NavigationItem.HomeView.route -> {
-                       Log.d("IS IN","HOME")
-                       toggleCurrentValue.value = false
+                when (navBackStackEntry?.destination?.route) {
+                    NavigationItem.HomeView.route -> {
+                        toggleCurrentValue.value = false
+                    }
 
-                   }
-                   NavigationItem.DetailsView.route -> {
-                       Log.d("IS IN","DETAILS")
-                       toggleCurrentValue.value = pokemonSelected!=null && pokemonSelected.isFavorite
-                   }
-                   else ->{}
-               }
+                    NavigationItem.DetailsView.route -> {
+                        toggleCurrentValue.value =
+                            pokemonSelected != null && pokemonSelected.isFavorite
+                    }
+                    else -> {}
+                }
             }
 
+
             Scaffold(
+
                 topBar = {
-                    CustomTopBar(title = stringResource(id = R.string.welcome_top_bar),
+                    CustomTopBar(title = if (currentView.value == NavigationItem.HomeView.route) {
+                        stringResource(id = R.string.welcome_top_bar)
+                    } else {
+                        pokemonSelected?.name.toString()
+                    },
                         currentView = currentView.value,
                         defaultToggleActionValue = toggleCurrentValue.value,
-                        onNavigationAction = {navController.popBackStack()},
-                        onSelectionAction = {customAction ->
-                            when(customAction){
+                        onNavigationAction = { navController.popBackStack() },
+                        onSelectionAction = { customAction ->
+                            when (customAction) {
                                 Constants.ADD_NEW_FAVORITE_POKEMON_ACTION -> {
                                     homeViewModel.pokemonDataSelected.value?.let {
                                         homeViewModel.addNewFavoritePokemon(
@@ -69,18 +80,23 @@ class MainActivity : ComponentActivity() {
                                         )
                                     }
                                 }
-                                Constants.REMOVE_FAVORITE_POKEMON_ACTION ->{
+
+                                Constants.REMOVE_FAVORITE_POKEMON_ACTION -> {
                                     homeViewModel.pokemonDataSelected.value?.let {
                                         homeViewModel.removeFavoritePokemon(
                                             it
                                         )
                                     }
                                 }
+
                                 else -> {}
                             }
                         })
                 }
             ) { innerPadding ->
+                if (showLoading) {
+                    LoadingComponent()
+                }
                 NavigationHost(
                     modifier = Modifier.padding(innerPadding),
                     navController = navController,

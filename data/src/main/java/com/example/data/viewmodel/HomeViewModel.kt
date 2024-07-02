@@ -30,7 +30,8 @@ class HomeViewModel(
     private val getPreviousPokemonListUseCase: GetPreviousPokemonListUseCase,
     private val getAllFavoritePokemonListUseCase: GetAllFavoritePokemonListUseCase,
     private val addNewFavoritePokemonUseCase: AddNewFavoritePokemonUseCase,
-    private val removeFavoritePokemonUseCase: RemoveFavoritePokemonUseCase
+    private val removeFavoritePokemonUseCase: RemoveFavoritePokemonUseCase,
+    private val loadingComponentViewModel : LoadingComponentViewModel
 ) : ViewModel() {
 
 
@@ -62,8 +63,14 @@ class HomeViewModel(
         MutableStateFlow(
             listOf()
         )
-    val favoritePokemonList: StateFlow<List<FavoritePokemonEntity>> =
-        _favoritePokemonListState.asStateFlow()
+    private val favoritePokemonList: StateFlow<List<FavoritePokemonEntity>> = _favoritePokemonListState.asStateFlow()
+
+
+    private val _showPreviousButtonState: MutableStateFlow<Boolean> =  MutableStateFlow( false )
+    val showPreviousButton: StateFlow<Boolean> = _showPreviousButtonState.asStateFlow()
+
+    private val _showNextButtonState: MutableStateFlow<Boolean> =  MutableStateFlow( false )
+    val showNextButton: StateFlow<Boolean> = _showNextButtonState.asStateFlow()
 
 
     //private var repository : LocalStorageRepository
@@ -99,6 +106,7 @@ class HomeViewModel(
 
     private fun getPokemonList() {
         viewModelScope.launch(Dispatchers.IO) {
+
             val response = getPokemonListUseCase.invoke()
             processResponse(response = response)
         }.invokeOnCompletion {
@@ -166,7 +174,8 @@ class HomeViewModel(
             favoritePokemonList?.let {
                 setFavoritePokemonList(favoritePokemonList)
             }
-        }.invokeOnCompletion { }
+        }.invokeOnCompletion {
+        }
     }
 
 
@@ -217,14 +226,18 @@ class HomeViewModel(
         if (response?.results?.isNotEmpty() == true) {
             if (hasValidValue(response.next)) {
                 setNextPokemonListUrl(response.next)
+                _showNextButtonState.value = true
             } else {
                 setNextPokemonListUrl(EMPTY_STRING)
+                _showNextButtonState.value = false
             }
 
             if (hasValidValue(response.previous)) {
                 setPreviousPokemonListUrl(response.previous)
+                _showPreviousButtonState.value = true
             } else {
                 setPreviousPokemonListUrl(EMPTY_STRING)
+                _showPreviousButtonState.value = false
             }
             setPokemonList(response.results)
         }

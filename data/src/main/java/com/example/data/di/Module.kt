@@ -11,6 +11,7 @@ import com.example.data.usecase.GetPreviousPokemonListUseCase
 import com.example.data.usecase.RemoveFavoritePokemonUseCase
 import com.example.data.viewmodel.DetailsViewModel
 import com.example.data.viewmodel.HomeViewModel
+import com.example.data.viewmodel.LoadingComponentViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.GlobalContext.loadKoinModules
 import org.koin.dsl.module
@@ -31,7 +32,7 @@ private val loadFeature by lazy {
 
 
 val repositoryModule = module {
-    single<PokemonRepository> { PokemonRepositoryImpl(get()) }
+    single<PokemonRepository> { PokemonRepositoryImpl(get(),get()) }
 }
 
 val useCaseModule = module {
@@ -45,6 +46,7 @@ val useCaseModule = module {
 }
 
 val viewModelModule = module {
-    single { HomeViewModel(get(), get(), get(), get(), get(), get(),get()) }
+    single { HomeViewModel(get(), get(), get(), get(), get(), get(),get(), get()) }
+    single { LoadingComponentViewModel() }
     viewModel { DetailsViewModel(get(),get()) }
 }
