@@ -2,6 +2,7 @@ package com.example.masterdetaildmt.components.custom
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -14,7 +15,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.example.masterdetaildmt.R
 import com.example.masterdetaildmt.navigation.NavigationItem
-import com.example.masterdetaildmt.utils.Constants
+import com.example.masterdetaildmt.utils.Constants.Companion.ADD_NEW_FAVORITE_POKEMON_ACTION
+import com.example.masterdetaildmt.utils.Constants.Companion.CUSTOM_ACTION
+import com.example.masterdetaildmt.utils.Constants.Companion.REMOVE_FAVORITE_POKEMON_ACTION
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,7 +37,7 @@ fun CustomTopBar(
     when (currentView) {
         NavigationItem.HomeView.route -> {
             showBackArrow.value = false
-            showRightActions.value = false
+            showRightActions.value = true
         }
 
         NavigationItem.DetailsView.route -> {
@@ -42,44 +45,15 @@ fun CustomTopBar(
             showRightActions.value = true
         }
 
+        NavigationItem.LocationsView.route -> {
+            showBackArrow.value = true
+            showRightActions.value = false
+        }
+
         else -> {
             showBackArrow.value = false
         }
     }
-    /*Row(modifier = Modifier
-        .height(dimensionResource(id = R.dimen.master_details_50_dp))
-        .fillMaxWidth()) {
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth(0.3F)
-                .background(androidx.compose.ui.graphics.Color.Red)
-        ) {
-
-        }
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth(0.6F)
-                .background(androidx.compose.ui.graphics.Color.Green)
-        ) {
-            Text(text = title)
-        }
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth()
-                .background(androidx.compose.ui.graphics.Color.Red)
-        ) {
-
-        }
-    }*/
     TopAppBar(
         navigationIcon = {
             if (showBackArrow.value) {
@@ -93,24 +67,36 @@ fun CustomTopBar(
             if (showRightActions.value){
                 IconButton(onClick = {
                     onSelectionAction.invoke(
-                        if (isFavorite.value) {
-                            Constants.REMOVE_FAVORITE_POKEMON_ACTION
+                        if (currentView == NavigationItem.HomeView.route){
+                            CUSTOM_ACTION
+                        }
+                        else if (isFavorite.value) {
+                            REMOVE_FAVORITE_POKEMON_ACTION
                         } else {
-                            Constants.ADD_NEW_FAVORITE_POKEMON_ACTION
+                            ADD_NEW_FAVORITE_POKEMON_ACTION
                         }
                     )
                     isFavorite.value = !isFavorite.value
                 }) {
-                    Icon(
-                        painter = painterResource(
-                            id = if (isFavorite.value) {
-                                R.drawable.star_filled
-                            } else {
-                                R.drawable.star_outline
-                            }
-                        ),
-                        contentDescription = "Leer después"
-                    )
+
+                    if (currentView == NavigationItem.HomeView.route){
+                        Icon(
+                            imageVector = Icons.Filled.LocationOn,
+                            contentDescription = ""
+                        )
+                    }
+                    else {
+                        Icon(
+                            painter = painterResource(
+                                id = if (isFavorite.value) {
+                                    R.drawable.star_filled
+                                } else {
+                                    R.drawable.star_outline
+                                }
+                            ),
+                            contentDescription = ""
+                        )
+                    }
                 }
             }
         }

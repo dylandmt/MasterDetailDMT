@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -14,8 +15,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.toUpperCase
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.data.datamodels.PokemonData
 import com.example.data.viewmodel.HomeViewModel
 import com.example.data.viewmodel.LoadingComponentViewModel
@@ -23,13 +28,17 @@ import com.example.masterdetaildmt.components.custom.CustomTopBar
 import com.example.masterdetaildmt.components.custom.LoadingComponent
 import com.example.masterdetaildmt.navigation.NavigationHost
 import com.example.masterdetaildmt.navigation.NavigationItem
-import com.example.masterdetaildmt.utils.Constants
+import com.example.masterdetaildmt.utils.Constants.Companion.ADD_NEW_FAVORITE_POKEMON_ACTION
+import com.example.masterdetaildmt.utils.Constants.Companion.CUSTOM_ACTION
+import com.example.masterdetaildmt.utils.Constants.Companion.EMPTY_STRING
+import com.example.masterdetaildmt.utils.Constants.Companion.REMOVE_FAVORITE_POKEMON_ACTION
 import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             val navController = rememberNavController()
             val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -55,25 +64,21 @@ class MainActivity : ComponentActivity() {
                         toggleCurrentValue.value =
                             pokemonSelected != null && pokemonSelected.isFavorite
                     }
+
                     else -> {}
                 }
             }
 
 
             Scaffold(
-
                 topBar = {
-                    CustomTopBar(title = if (currentView.value == NavigationItem.HomeView.route) {
-                        stringResource(id = R.string.welcome_top_bar)
-                    } else {
-                        pokemonSelected?.name.toString()
-                    },
+                    CustomTopBar(title = getTopBarTitle(currentView.value,pokemonSelected),
                         currentView = currentView.value,
                         defaultToggleActionValue = toggleCurrentValue.value,
                         onNavigationAction = { navController.popBackStack() },
                         onSelectionAction = { customAction ->
                             when (customAction) {
-                                Constants.ADD_NEW_FAVORITE_POKEMON_ACTION -> {
+                                ADD_NEW_FAVORITE_POKEMON_ACTION -> {
                                     homeViewModel.pokemonDataSelected.value?.let {
                                         homeViewModel.addNewFavoritePokemon(
                                             it
@@ -81,12 +86,16 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
 
-                                Constants.REMOVE_FAVORITE_POKEMON_ACTION -> {
+                                REMOVE_FAVORITE_POKEMON_ACTION -> {
                                     homeViewModel.pokemonDataSelected.value?.let {
                                         homeViewModel.removeFavoritePokemon(
                                             it
                                         )
                                     }
+                                }
+
+                                CUSTOM_ACTION -> {
+                                    navController.navigate(NavigationItem.LocationsView.route)
                                 }
 
                                 else -> {}
@@ -104,5 +113,24 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
+    }
+
+    @Composable
+    private fun getTopBarTitle(currentView:String, pokemonSelected : PokemonData?):String {
+        var title: String = EMPTY_STRING
+        title = when (currentView) {
+            NavigationItem.HomeView.route -> {
+                stringResource(id = R.string.welcome_top_bar)
+            }
+
+            NavigationItem.LocationsView.route -> {
+                stringResource(id = R.string.locations_title)
+            }
+
+            else -> {
+                pokemonSelected?.name.toString().uppercase()
+            }
+        }
+        return title
     }
 }

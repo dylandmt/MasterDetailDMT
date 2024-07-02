@@ -12,6 +12,7 @@ import com.example.data.usecase.RemoveFavoritePokemonUseCase
 import com.example.data.viewmodel.DetailsViewModel
 import com.example.data.viewmodel.HomeViewModel
 import com.example.data.viewmodel.LoadingComponentViewModel
+import com.example.data.viewmodel.LocationsViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.GlobalContext.loadKoinModules
 import org.koin.dsl.module
@@ -49,4 +50,5 @@ val viewModelModule = module {
     single { HomeViewModel(get(), get(), get(), get(), get(), get(),get(), get()) }
     single { LoadingComponentViewModel() }
     viewModel { DetailsViewModel(get(),get()) }
+    viewModel { LocationsViewModel() }
 }

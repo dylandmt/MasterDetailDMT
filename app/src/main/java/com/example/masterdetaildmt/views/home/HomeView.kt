@@ -65,7 +65,8 @@ class HomeView {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize(),
-                    state = scrollState
+                    state = scrollState,
+                    userScrollEnabled = !showLoading
                 ) {
                     if (showPreviousButton && !showLoading) {
                         item {

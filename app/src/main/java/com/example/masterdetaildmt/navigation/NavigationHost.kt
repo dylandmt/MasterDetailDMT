@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.masterdetaildmt.views.details.DetailsView
 import com.example.masterdetaildmt.views.home.HomeView
+import com.example.masterdetaildmt.views.locations.LocationsView
 
 @Composable
 fun NavigationHost(
@@ -27,6 +28,9 @@ fun NavigationHost(
         }
         composable(NavigationItem.DetailsView.route){
             DetailsView().getInstance(navController)
+        }
+         composable(NavigationItem.LocationsView.route){
+             LocationsView().getInstance(navController,context)
         }
     }
 }
