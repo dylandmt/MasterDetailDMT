@@ -59,6 +59,7 @@ import com.example.data.viewmodel.DetailsViewModel
 import com.example.data.viewmodel.HomeViewModel
 import com.example.masterdetaildmt.R
 import com.example.masterdetaildmt.components.custom.AnimatedButton
+import com.example.masterdetaildmt.components.custom.CustomTopBar
 import com.example.masterdetaildmt.components.custom.PokemonItem
 import com.example.masterdetaildmt.utils.Constants.Companion.DEFAULT_ANIMATION_TIME
 import org.koin.androidx.compose.inject

@@ -2,11 +2,16 @@ package com.example.data.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.example.data.datamodels.Sprite
+import com.example.data.usecase.AddNewFavoritePokemonUseCase
+import com.example.data.usecase.RemoveFavoritePokemonUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class DetailsViewModel : ViewModel() {
+class DetailsViewModel(
+    private val addNewFavoritePokemonUseCase: AddNewFavoritePokemonUseCase,
+    private val removeFavoritePokemonUseCase: RemoveFavoritePokemonUseCase
+) : ViewModel() {
     private val _spritesListState: MutableStateFlow<ArrayList<String>> = MutableStateFlow(
         arrayListOf()
     )

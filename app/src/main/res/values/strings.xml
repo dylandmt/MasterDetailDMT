@@ -4,4 +4,6 @@
     <string name="name"><b>NAME: </b>%1$S</string>
     <string name="height"><b>HEIGHT: </b>%1$S</string>
     <string name="weight"><b>WEIGHT: </b>%1$S</string>
+    <string name="welcome_top_bar">Welcome to Pokedex!</string>
+    <string name="no_data">No data!</string>
 </resources>
