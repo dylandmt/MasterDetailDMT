@@ -8,4 +8,6 @@
     <string name="locations_title">Locations</string>
     <string name="no_data">No data!</string>
     <string name="loading">Loading...</string>
+    <string name="pokelocation_added_success_message">New Pokelocation Added!</string>
+    <string name="pokelocation_added_error_message">Ops! Error to added your current PokeLocation! We\'ll try it again!</string>
 </resources>

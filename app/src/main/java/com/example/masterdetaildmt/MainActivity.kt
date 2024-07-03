@@ -1,11 +1,13 @@
 package com.example.masterdetaildmt
 
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -15,19 +17,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.toUpperCase
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
 import com.example.data.datamodels.PokemonData
 import com.example.data.viewmodel.HomeViewModel
 import com.example.data.viewmodel.LoadingComponentViewModel
+import com.example.data.viewmodel.LocationsViewModel
 import com.example.masterdetaildmt.components.custom.CustomTopBar
 import com.example.masterdetaildmt.components.custom.LoadingComponent
 import com.example.masterdetaildmt.navigation.NavigationHost
 import com.example.masterdetaildmt.navigation.NavigationItem
+import com.example.masterdetaildmt.services.LocationBackgroundService
 import com.example.masterdetaildmt.utils.Constants.Companion.ADD_NEW_FAVORITE_POKEMON_ACTION
 import com.example.masterdetaildmt.utils.Constants.Companion.CUSTOM_ACTION
 import com.example.masterdetaildmt.utils.Constants.Companion.EMPTY_STRING
@@ -35,10 +35,12 @@ import com.example.masterdetaildmt.utils.Constants.Companion.REMOVE_FAVORITE_POK
 import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalMaterial3Api::class)
+
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val locationsViewModel: LocationsViewModel by inject()
         setContent {
             val navController = rememberNavController()
             val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -113,6 +115,36 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("onResume","jaja")
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("onPause","jaja")
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("DESTROYED","jaja")
+
+        try {
+
+            Intent(applicationContext, LocationBackgroundService::class.java).also {
+                it.action = LocationBackgroundService.Actions.START.toString()
+                applicationContext.startService(it)
+            }
+        }
+        catch (e: Exception){
+            Log.d("ERRRRROOORTR","jaja")
+
+        }
+
     }
 
     @Composable

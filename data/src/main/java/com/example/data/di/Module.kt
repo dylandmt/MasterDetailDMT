@@ -2,6 +2,8 @@ package com.example.data.di
 
 import com.example.data.implementation.PokemonRepositoryImpl
 import com.example.data.repository.PokemonRepository
+import com.example.data.service.firestore.FireStore
+import com.example.data.service.firestore.IFireStore
 import com.example.data.usecase.AddNewFavoritePokemonUseCase
 import com.example.data.usecase.GetAllFavoritePokemonListUseCase
 import com.example.data.usecase.GetNextPokemonListUseCase
@@ -26,7 +28,8 @@ private val loadFeature by lazy {
             useCaseModule,
             viewModelModule,
             networkModule,
-            localStorageModule
+            localStorageModule,
+            cloudModule
         )
     )
 }
@@ -34,6 +37,10 @@ private val loadFeature by lazy {
 
 val repositoryModule = module {
     single<PokemonRepository> { PokemonRepositoryImpl(get(),get()) }
+}
+
+val cloudModule = module {
+    single<IFireStore> { FireStore() }
 }
 
 val useCaseModule = module {
@@ -50,5 +57,5 @@ val viewModelModule = module {
     single { HomeViewModel(get(), get(), get(), get(), get(), get(),get(), get()) }
     single { LoadingComponentViewModel() }
     viewModel { DetailsViewModel(get(),get()) }
-    viewModel { LocationsViewModel() }
+    viewModel { LocationsViewModel(get(),get()) }
 }

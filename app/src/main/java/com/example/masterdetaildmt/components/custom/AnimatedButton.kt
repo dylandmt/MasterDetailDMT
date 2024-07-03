@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import com.example.masterdetaildmt.R
@@ -28,8 +29,8 @@ import com.example.masterdetaildmt.utils.Constants
 @Composable
 fun AnimatedButton(
     iconPainter: Painter = painterResource(R.drawable.arrow_down),
-    initialColor : Color = Color.Red,
-    targetColor: Color = Color.Red,
+    initialColor : Color = colorResource(id = R.color.poke_red),
+    targetColor: Color = colorResource(id = R.color.poke_red_secondary),
     onClick : () -> Unit
 ) {
     val infiniteTransition = rememberInfiniteTransition("")

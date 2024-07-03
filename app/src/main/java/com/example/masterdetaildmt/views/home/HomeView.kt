@@ -2,8 +2,10 @@ package com.example.masterdetaildmt.views.home
 
 import android.content.Context
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -18,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
 import com.example.data.di.provideDao
@@ -64,9 +67,11 @@ class HomeView {
         if (pokemonList.isNotEmpty()) {
                 LazyColumn(
                     modifier = Modifier
-                        .fillMaxSize(),
+                        .fillMaxSize()
+                        .padding(horizontal = dimensionResource(id = R.dimen.master_details_10_dp)),
                     state = scrollState,
-                    userScrollEnabled = !showLoading
+                    userScrollEnabled = !showLoading,
+                    verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.master_details_5_dp)),
                 ) {
                     if (showPreviousButton && !showLoading) {
                         item {

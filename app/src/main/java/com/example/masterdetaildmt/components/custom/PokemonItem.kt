@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,13 +20,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.example.data.datamodels.PokemonData
 import com.example.masterdetaildmt.R
 import com.example.masterdetaildmt.utils.Constants.Companion.DISPLAY_IMAGE_ACTION
@@ -35,12 +41,12 @@ import com.example.masterdetaildmt.utils.Constants.Companion.DISPLAY_PLACEHOLDER
 @Composable
 fun PokemonItem(
     data: PokemonData,
-    borderColor: Color = Color.Red,
-    fillColor: Color = Color.Gray,
-    size : Dp = dimensionResource(id = R.dimen.master_details_100_dp),
-    horizontalMargin : Dp = dimensionResource(id = R.dimen.master_details_0_dp),
-    verticalMargin : Dp = dimensionResource(id = R.dimen.master_details_0_dp),
-    onClick : (PokemonData) -> Unit
+    borderColor: Color = colorResource(id = R.color.poke_blue),
+    fillColor: Color = colorResource(id = R.color.poke_yellow),
+    size: Dp = dimensionResource(id = R.dimen.master_details_100_dp),
+    horizontalMargin: Dp = dimensionResource(id = R.dimen.master_details_0_dp),
+    verticalMargin: Dp = dimensionResource(id = R.dimen.master_details_0_dp),
+    onClick: (PokemonData) -> Unit
 ) {
     var action by rememberSaveable { mutableStateOf(DISPLAY_PLACEHOLDER_ACTION) }
     action = determineAction(name = data.name, url = data.urlImage)
@@ -78,12 +84,34 @@ fun PokemonItem(
                     )
                 }
 
-                DISPLAY_IMAGE_ACTION -> {
-                    Image(
-                        painter = rememberAsyncImagePainter(data.urlImage),
-                        contentDescription = null,
-                        modifier = Modifier.size(size)
+                DISPLAY_IMAGE_ACTION -> { 
+                    val painter = rememberAsyncImagePainter(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(data.urlImage)
+                            .size(coil.size.Size.ORIGINAL)
+                            .build()
                     )
+
+                    when (painter.state) {
+                        is AsyncImagePainter.State.Success -> {
+                            Image(
+                                painter = painter,
+                                contentDescription = null,
+                                modifier = Modifier.size(size)
+                            )
+                        }
+
+                        is AsyncImagePainter.State.Loading -> {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(dimensionResource(id = R.dimen.master_details_20_dp))
+                            )
+                        }
+
+                        is AsyncImagePainter.State.Error -> {
+                            Text(text = data.name.substring(0).uppercase())
+                        }
+                        else -> {}
+                    }
                     Text(text = data.name)
                 }
 

@@ -11,8 +11,7 @@ android {
     compileSdk = 33
 
     defaultConfig {
-        minSdk = 23
-
+        minSdk = 30
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
@@ -53,6 +52,11 @@ dependencies {
     // add the following lines
     implementation("androidx.room:room-ktx:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
+
+    // Import the BoM for the Firebase platform
+    implementation(platform("com.google.firebase:firebase-bom:31.0.0"))
+    // Declare the dependency for the Firestore library
+    implementation("com.google.firebase:firebase-firestore-ktx")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

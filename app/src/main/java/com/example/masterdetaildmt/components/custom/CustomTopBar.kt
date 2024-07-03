@@ -1,5 +1,6 @@
 package com.example.masterdetaildmt.components.custom
 
+import androidx.compose.foundation.background
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.LocationOn
@@ -8,9 +9,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.example.masterdetaildmt.R
@@ -55,6 +60,13 @@ fun CustomTopBar(
         }
     }
     TopAppBar(
+        colors = TopAppBarColors(
+            containerColor = colorResource(id = R.color.poke_red_secondary),
+            scrolledContainerColor = colorResource(id = R.color.poke_red_secondary),
+            navigationIconContentColor = Color.White,
+            titleContentColor = Color.White,
+            actionIconContentColor = Color.White
+        ),
         navigationIcon = {
             if (showBackArrow.value) {
                 IconButton(onClick = { onNavigationAction.invoke() }) {
@@ -64,13 +76,12 @@ fun CustomTopBar(
         },
         title = { Text(text = title) },
         actions = {
-            if (showRightActions.value){
+            if (showRightActions.value) {
                 IconButton(onClick = {
                     onSelectionAction.invoke(
-                        if (currentView == NavigationItem.HomeView.route){
+                        if (currentView == NavigationItem.HomeView.route) {
                             CUSTOM_ACTION
-                        }
-                        else if (isFavorite.value) {
+                        } else if (isFavorite.value) {
                             REMOVE_FAVORITE_POKEMON_ACTION
                         } else {
                             ADD_NEW_FAVORITE_POKEMON_ACTION
@@ -79,13 +90,13 @@ fun CustomTopBar(
                     isFavorite.value = !isFavorite.value
                 }) {
 
-                    if (currentView == NavigationItem.HomeView.route){
+                    if (currentView == NavigationItem.HomeView.route) {
                         Icon(
                             imageVector = Icons.Filled.LocationOn,
-                            contentDescription = ""
+                            contentDescription = "",
+                            tint = Color.White
                         )
-                    }
-                    else {
+                    } else {
                         Icon(
                             painter = painterResource(
                                 id = if (isFavorite.value) {

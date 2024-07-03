@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "333738083034",
+    "project_id": "masterdetaildmt",
+    "storage_bucket": "masterdetaildmt.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:333738083034:android:81ed76714eb3433004dbe3",
+        "android_client_info": {
+          "package_name": "com.example.masterdetaildmt"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNb-hPYVHMItk89PJxSnSwwBYtIqXXeOA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
