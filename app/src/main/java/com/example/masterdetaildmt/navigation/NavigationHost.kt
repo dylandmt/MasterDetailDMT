@@ -24,13 +24,13 @@ fun NavigationHost(
         startDestination = startDestination
     ) {
         composable(NavigationItem.HomeView.route){
-            HomeView().getInstance(navController,context)
+            HomeView().getInstance(navController)
         }
         composable(NavigationItem.DetailsView.route){
-            DetailsView().getInstance(navController)
+            DetailsView().getInstance()
         }
          composable(NavigationItem.LocationsView.route){
-             LocationsView().getInstance(navController,context)
+             LocationsView().getInstance(context)
         }
     }
 }

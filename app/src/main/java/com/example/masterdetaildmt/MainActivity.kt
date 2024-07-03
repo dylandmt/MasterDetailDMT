@@ -1,8 +1,6 @@
 package com.example.masterdetaildmt
 
-import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -22,7 +20,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.data.datamodels.PokemonData
 import com.example.data.viewmodel.HomeViewModel
 import com.example.data.viewmodel.LoadingComponentViewModel
-import com.example.data.viewmodel.LocationsViewModel
 import com.example.masterdetaildmt.components.custom.CustomTopBar
 import com.example.masterdetaildmt.components.custom.LoadingComponent
 import com.example.masterdetaildmt.navigation.NavigationHost
@@ -30,17 +27,13 @@ import com.example.masterdetaildmt.navigation.NavigationItem
 import com.example.masterdetaildmt.services.LocationBackgroundService
 import com.example.masterdetaildmt.utils.Constants.Companion.ADD_NEW_FAVORITE_POKEMON_ACTION
 import com.example.masterdetaildmt.utils.Constants.Companion.CUSTOM_ACTION
-import com.example.masterdetaildmt.utils.Constants.Companion.EMPTY_STRING
 import com.example.masterdetaildmt.utils.Constants.Companion.REMOVE_FAVORITE_POKEMON_ACTION
 import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
 
-    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val locationsViewModel: LocationsViewModel by inject()
         setContent {
             val navController = rememberNavController()
             val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -117,22 +110,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        Log.d("onResume","jaja")
-
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.d("onPause","jaja")
-
-    }
-
     override fun onDestroy() {
         super.onDestroy()
-        Log.d("DESTROYED","jaja")
-
         try {
 
             Intent(applicationContext, LocationBackgroundService::class.java).also {
@@ -141,16 +120,14 @@ class MainActivity : ComponentActivity() {
             }
         }
         catch (e: Exception){
-            Log.d("ERRRRROOORTR","jaja")
-
+            Log.d("Excption",e.message.toString())
         }
 
     }
 
     @Composable
     private fun getTopBarTitle(currentView:String, pokemonSelected : PokemonData?):String {
-        var title: String = EMPTY_STRING
-        title = when (currentView) {
+        val title: String = when (currentView) {
             NavigationItem.HomeView.route -> {
                 stringResource(id = R.string.welcome_top_bar)
             }

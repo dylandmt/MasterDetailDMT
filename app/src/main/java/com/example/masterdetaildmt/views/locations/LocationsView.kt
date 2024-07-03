@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,8 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.core.app.ActivityCompat
-import androidx.navigation.NavHostController
-import com.example.data.viewmodel.LoadingComponentViewModel
 import com.example.data.viewmodel.LocationsViewModel
 import com.example.masterdetaildmt.R
 import com.example.masterdetaildmt.permissions.RequestLocationPermission
@@ -49,14 +46,10 @@ class LocationsView {
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     @Composable
-    fun getInstance(navController: NavHostController, context: Context) {
-        val loadingComponentViewModel: LoadingComponentViewModel by inject()
-        val locationsViewModel: LocationsViewModel by inject()
+    fun getInstance(context: Context) {
+         val locationsViewModel: LocationsViewModel by inject()
         val currentContent = remember { mutableStateOf(EMPTY_STRING) }
 
-        val currentLocation = locationsViewModel.currentPokePosition.collectAsState().value
-
-        //Initialize it where you need it
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
         RequestLocationPermission(
             onPermissionGranted = {
@@ -89,8 +82,7 @@ class LocationsView {
             onPermissionDenied = {
             },
             onPermissionsRevoked = {
-            },
-            context = context
+            }
         )
         when (currentContent.value) {
             LOCATIONS_CONTENT -> {

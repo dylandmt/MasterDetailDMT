@@ -1,6 +1,5 @@
 package com.example.masterdetaildmt.components.custom
 
-import androidx.compose.foundation.background
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.LocationOn
@@ -13,7 +12,6 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -23,7 +21,6 @@ import com.example.masterdetaildmt.navigation.NavigationItem
 import com.example.masterdetaildmt.utils.Constants.Companion.ADD_NEW_FAVORITE_POKEMON_ACTION
 import com.example.masterdetaildmt.utils.Constants.Companion.CUSTOM_ACTION
 import com.example.masterdetaildmt.utils.Constants.Companion.REMOVE_FAVORITE_POKEMON_ACTION
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

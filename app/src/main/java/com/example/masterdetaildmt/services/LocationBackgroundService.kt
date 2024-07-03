@@ -5,7 +5,6 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -53,7 +52,6 @@ class LocationBackgroundService : Service() {
 
     private fun start(){
         createNotificationChannel()
-        val delay = 1000L
         startTimer{
             getCurrentLocation()
         }
@@ -67,7 +65,7 @@ class LocationBackgroundService : Service() {
                 action()
             }
         }
-        timer!!.schedule(timerTask, 10000 * 6 * 2, 10000) //
+        timer!!.schedule(timerTask, 10000 * 6 * 2, 10000)
     }
 
     private fun getCurrentLocation() {
@@ -121,8 +119,8 @@ class LocationBackgroundService : Service() {
 
     private fun getNotification(): Notification {
         val builder = NotificationCompat.Builder(this, "POKE_CHANNEL")
-            .setContentTitle("Location Service")
-            .setContentText("Getting location updates")
+            .setContentTitle("Pokedex")
+            .setContentText("Getting your PokePosition!")
             .setSmallIcon(R.drawable.ic_pokeball)
             .setOngoing(true)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -141,10 +139,5 @@ class LocationBackgroundService : Service() {
             }
         }, delay)
         return handler
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d("DESTROYED","jaja")
     }
 }
